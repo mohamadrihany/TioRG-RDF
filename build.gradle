@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'application'
+mainClassName = 'tiorg.TioRG'
+
+repositories {
+    jcenter()
+}
+
+dependencies {
+    compile group: 'net.sf.jung', name: 'jung-api', version: '2.0.1'
+    compile group: 'net.sf.jung', name: 'jung-graph-impl', version: '2.0.1'
+    compile group: 'net.sf.jung', name: 'jung-algorithms', version: '2.0.1'
+    compile group: 'net.sf.jung', name: 'jung-visualization', version: '2.0.1'
+
+    compile group: 'org.apache.jena', name: 'apache-jena-libs', version: '3.0.1'
+
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '5.4.1'
+    compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '5.4.1'
+    compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '5.4.1'
+
+    compile group: 'org.jdom', name: 'jdom2', version: '2.0.4'
+
+    compile 'com.google.guava:guava:21.0'
+
+    // Use JUnit test framework
+    testCompile 'junit:junit:4.12'
+}

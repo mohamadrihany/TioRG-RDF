@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+  <Properties>
+    <Property name="defaultCloseOperation" type="int" value="2"/>
+    <Property name="title" type="java.lang.String" value="Crit&#xe8;res s&#xe9;mantiques de clustering"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="1" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="globalPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="globalPanel" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Container class="javax.swing.JPanel" name="globalPanel">
+      <Properties>
+        <Property name="autoscrolls" type="boolean" value="true"/>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="1" attributes="0">
+              <Group type="102" attributes="0">
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Group type="102" attributes="0">
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                          <Component id="jTabbedPane1" min="-2" pref="488" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                      </Group>
+                      <Group type="102" alignment="0" attributes="0">
+                          <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace pref="37" max="32767" attributes="0"/>
+                  <Component id="jTabbedPane1" min="-2" pref="200" max="-2" attributes="0"/>
+                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
+                  <Component id="jPanel2" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+          <Properties>
+            <Property name="autoscrolls" type="boolean" value="true"/>
+          </Properties>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="fr.views.PredicateTable predicatesPanelValorisation = new fr.views.PredicateTable(true);&#xa;        predicatesPanelValorisation.setOpaque(true);&#xa;&#xa;JScrollPane predicatesList=(JScrollPane) predicatesPanelValorisation.getComponent(0);&#xa;JViewport predicatesViewport = predicatesList.getViewport(); &#xa; predicatesTableValorisation = (JTable)predicatesViewport.getView();&#xa;                PredicateTableModel tableModel = (PredicateTableModel) predicatesTableValorisation.getModel();&#xa;                int num = tableModel.getRowCount()-1;&#xa;               for (int i = 0; i &lt;=num; i++) {&#xa;                    tableModel.removeRow(0);&#xa;                }&#xa;                if(!eages.isEmpty()){&#xa;                for (String eage : eages) {&#xa;&#xa;                    ArrayList column = new ArrayList();&#xa;                   column.add(eage);&#xa;                    column.add(&quot;1&quot;);&#xa;                   tableModel.addRow(column.toArray());&#xa;&#xa;}}&#xa;fr.views.PredicateTable predicatesPanelPartage = new fr.views.PredicateTable(false);&#xa;&#xa;JScrollPane clustersList=(JScrollPane) predicatesPanelPartage.getComponent(0);&#xa;JViewport clustersViewport = clustersList.getViewport(); &#xa; predicatesTableCaracteristique = (JTable)clustersViewport.getView();&#xa;&#xa; PredicateTableModel tableModel2 = (PredicateTableModel) predicatesTableCaracteristique.getModel();&#xa;                int num2 = tableModel2.getRowCount()-1;&#xa;               for (int i = 0; i &lt;=num2; i++) {&#xa;                    tableModel2.removeRow(0);&#xa;                }&#xa;                if(!eages.isEmpty()){&#xa;                for (String eage : eages) {&#xa;&#xa;                    ArrayList column = new ArrayList();&#xa;                   column.add(eage);&#xa;                    column.add(&quot;Aucun&quot;);&#xa;                   tableModel2.addRow(column.toArray());&#xa;&#xa;}}&#xa;&#xa;&#xa;        predicatesPanelPartage.setOpaque(true);&#xa;predicatesPanelValorisation.setVisible(true);&#xa;predicatesPanelPartage.setVisible(true);&#xa;predicatesPanelValorisation.setAutoscrolls(true);&#xa;predicatesPanelPartage.setAutoscrolls(true);&#xa;jTabbedPane1.addTab(&quot;Pond&#xe9;ration des pr&#xe9;dicats&quot;, predicatesPanelValorisation);&#xa;jTabbedPane1.addTab(&quot;Crit&#xe8;res de regroupement&quot;, predicatesPanelPartage);"/>
+            <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JTabbedPane()"/>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="predicatesTableCaracteristique = new javax.swing.JTable();&#xa;predicatesTableValorisation = new javax.swing.JTable();"/>
+          </AuxValues>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.BevelBorderInfo">
+                <BevelBorder/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout>
+            <DimensionLayout dim="0">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace pref="103" max="32767" attributes="0"/>
+                      <Component id="VisualiserButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
+                      <Component id="AnnulerButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="29" max="-2" attributes="0"/>
+                      <Component id="ValiderButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+            <DimensionLayout dim="1">
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Group type="103" groupAlignment="3" attributes="0">
+                          <Component id="ValiderButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="AnnulerButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                          <Component id="VisualiserButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
+            </DimensionLayout>
+          </Layout>
+          <SubComponents>
+            <Component class="javax.swing.JButton" name="VisualiserButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Visualize the Resulting Graph"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="VisualiserButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="AnnulerButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Cancel"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="AnnulerButtonActionPerformed"/>
+              </Events>
+            </Component>
+            <Component class="javax.swing.JButton" name="ValiderButton">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Save"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ValiderButtonActionPerformed"/>
+              </Events>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
