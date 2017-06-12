@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<root>
+    <Edges>
+        <Pattern>
+            <element>cooperateWith</element>
+          <!--  <equivalent>swrc:worksAtProject/^swrc:worksAtProject</equivalent> -->
+          <equivalent>swrc:worksAtProject ?z _swrc:worksAtProject</equivalent>
+             <!--   <equivalent>swrc:organizerOrChairOf ?z _swrc:organizerOrChairOf</equivalent> -->
+             <equivalent>swrc:publication ?z _swrc:publication</equivalent>
+        </Pattern>
+        <Pattern>
+            <element>worksAtProject</element>
+            <equivalent>swrc:publication ?z _swrc:outcomeDocument</equivalent>
+        </Pattern> 
+		<!--<Pattern>
+            <element>workedOnBy</element>
+            <equivalent>?intermidiatTopic swrc:workedOnBy  ?Researcher^ ?intermidiatTopic swrc:subTopic+ ?topic </equivalent>
+        </Pattern>-->
+    </Edges>
+    <Nodes>
+        <systematic>
+            <Pattern>
+                <element>class</element>
+                <equivalent>(^rdfs:subClassOf)*/(^rdf:type)</equivalent>
+                <equivalent>(^rdfs:subClassOf)+/(^rdf:type)?</equivalent>
+            </Pattern>
+            <Pattern>
+                <element>litteral</element>
+                <equivalent>?p</equivalent>
+            </Pattern>
+            <Pattern>
+                <element>instance</element>
+                <equivalent>owl:sameAs</equivalent>
+            </Pattern>
+        </systematic>
+        <personalized>
+             
+        </personalized>
+    </Nodes>
+</root>
