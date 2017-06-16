@@ -4,6 +4,10 @@
  */
 package fr.processings;
 
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.SparseGraph;
+import fr.clustering.MCODEVertexWeitingWeightedGraph.MyLink;
+import net.rootdev.jenajung.JenaJungGraph;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
@@ -11,10 +15,7 @@ import org.apache.jena.query.QueryFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseGraph;
-import fr.clustering.MCODEVertexWeitingWeightedGraph.MyLink;
-import fr.jenajung.JenaJungGraph;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

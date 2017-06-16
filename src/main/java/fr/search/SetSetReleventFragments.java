@@ -5,21 +5,23 @@
  */
 package fr.search;
 
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
 import edu.uci.ics.jung.graph.DirectedGraph;
-import fr.jenajung.JenaJungGraph;
 import fr.search.SearchElements.ElementReleventFragmentEdges;
 import fr.search.SearchElements.ElementReleventFragmentNodes;
 import fr.search.SearchElements.KeywordsReleventFragment;
 import fr.search.UsingPatternsNodes.TypeReleventFragment;
-import static fr.search.cart.Cart;
+import net.rootdev.jenajung.JenaJungGraph;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+
+import static fr.search.cart.Cart;
 
 /**
  *
