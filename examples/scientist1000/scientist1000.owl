@@ -1,0 +1,221 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:dbpedia-owl="http://dbpedia.org/ontology/"
+    xmlns="file:/C:/Users/houk/Documents/NetBeansProjects/TioRG/data/Graphs/exempledbpedia/scientistmorepredecatnationalitycountryINFLUENCEDBY1000.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="file:/C:/Users/houk/Documents/NetBeansProjects/TioRG/data/Graphs/exempledbpedia/scientistmorepredecatnationalitycountryINFLUENCEDBY1000.owl">
+  <owl:Ontology rdf:about="file:/C:/Users/houk/Documents/NetBeansProjects/TioRG/data/Graphs/exempledbpedia/scientistmorepredecatnationalitycountryINFLUENCEDBY1000.owl"/>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Muhammad_Suhail_Zubairy">
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Edwardes_College">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Pakistan"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Abdus_Salam_Award"/>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/University_of_Rochester">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/United_States"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Sitara-i-Imtiaz"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Quantum_optics"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Hilal-i-Imtiaz"/>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Quaid-i-Azam_University">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Pakistan"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/International_Centre_for_Theoretical_Physics">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Italy"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Quantum_computer"/>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Pakistani_people"/>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Emil_Wolf">
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Wolf_effect"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Coherence_(physics)"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Physicist"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Czechs"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/University_of_Bristol"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Max_Born_Award"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Marconi_Medal"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Franklin_Institute"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Frederic_Ives_Medal"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Humboldt_Prize"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Laser_science"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Quantum_mechanics"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/W._G._Unruh">
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Rutherford_Memorial_Medal"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Natural_Sciences_and_Engineering_Research_Council"/>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Canadians"/>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/University_of_Manitoba">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Canada"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Unruh_effect"/>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/John_Archibald_Wheeler">
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Wolf_Prize"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Geometrodynamics"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Nuclear_fission"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Albert_Einstein_Medal"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Black_hole"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/Johns_Hopkins_University"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Franklin_Medal"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Enrico_Fermi_Award"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Wheeler%E2%80%93Feynman_absorber_theory"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/General_relativity"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Unified_field_theory"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Oersted_Medal"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Physics"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/United_States"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Matteucci_Medal"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Wheeler&apos;s_delayed_choice_experiment"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Theoretical_physics"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/General_relativity"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Quantum_mechanics"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:/C:/Users/houk/Documents/NetBeansProjects/TioRG/data/Graphs/exempledbpedia/scientistmorepredecatnationalitycountryINFLUENCEDBY1000.owl#James_Arthur_(mathematician)">
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Yale_University">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/United_States"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/University_of_Toronto">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Canada"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Robert_Langlands">
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Langlands_program"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/Yale_University"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Wolf_Prize"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Canada"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Nemmers_Prize_in_Mathematics"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Leroy_P._Steele_Prize"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Jeffery%E2%80%93Williams_Prize"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematics"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/University_of_British_Columbia"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Shaw_Prize"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Arthur%E2%80%93Selberg_trace_formula"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Arthur_conjectures"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematics"/>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Canada"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/CRM-Fields-PIMS_prize"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Gerhard_Herzberg_Canada_Gold_Medal_for_Science_and_Engineering"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/C%C3%A9dric_Villani">
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Henri_Poincar%C3%A9_Prize"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Transportation_theory"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Herbrand_Prize"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Fermat_Prize"/>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/%C3%89cole_Normale_Sup%C3%A9rieure">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/France"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/France"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Fields_Medal"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Kinetic_theory"/>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Pierre-Louis_Lions">
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Partial_differential_equation"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Mean_field_game_theory"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/French_people"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Fields_Medal"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/%C3%89cole_Normale_Sup%C3%A9rieure"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematics"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/European_Mathematical_Society"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Boltzmann_equation"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematics"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/J._A._Todd">
+    <dbpedia-owl:influencedBy>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Solomon_Lefschetz">
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/United_States"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/Clark_University"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/%C3%89cole_Centrale_Paris"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Algebraic_topology"/>
+      </rdf:Description>
+    </dbpedia-owl:influencedBy>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/England"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Smith&apos;s_Prize"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Royal_Society"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Rockefeller_Foundation"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Coset_enumeration"/>
+    <dbpedia-owl:almaMater>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/University_of_Cambridge">
+        <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/England"/>
+      </rdf:Description>
+    </dbpedia-owl:almaMater>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Todd%E2%80%93Coxeter_algorithm"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematician"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Chevalley%E2%80%93Shephard%E2%80%93Todd_theorem"/>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/H._F._Baker">
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/De_Morgan_Medal"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Sylvester_Medal"/>
+        <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/University_of_Cambridge"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Geometry"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Baker%E2%80%93Akhiezer_function"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/United_Kingdom"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematician"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Todd_class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Grigory_Margulis">
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Superrigidity"/>
+    <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematics"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Lobachevsky_Prize"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Oppenheim_conjecture"/>
+    <dbpedia-owl:doctoralAdvisor>
+      <rdf:Description rdf:about="http://dbpedia.org/resource/Yakov_G._Sinai">
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Dirac_Prize"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Dannie_Heineman_Prize_for_Mathematical_Physics"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Henri_Poincar%C3%A9_Prize"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Dynamical_system"/>
+        <dbpedia-owl:almaMater>
+          <rdf:Description rdf:about="http://dbpedia.org/resource/Moscow_State_University">
+            <dbpedia-owl:country rdf:resource="http://dbpedia.org/resource/Russia"/>
+          </rdf:Description>
+        </dbpedia-owl:almaMater>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Wolf_Prize_in_Mathematics"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Fluid_dynamics"/>
+        <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Russia"/>
+        <dbpedia-owl:field rdf:resource="http://dbpedia.org/resource/Mathematician"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Nemmers_Prize_in_Mathematics"/>
+        <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Probability_theory"/>
+        <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Boltzmann_Medal"/>
+      </rdf:Description>
+    </dbpedia-owl:doctoralAdvisor>
+    <dbpedia-owl:almaMater rdf:resource="http://dbpedia.org/resource/Moscow_State_University"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Alexander_von_Humboldt_Prize"/>
+    <dbpedia-owl:nationality rdf:resource="http://dbpedia.org/resource/Russia"/>
+    <dbpedia-owl:knownFor rdf:resource="http://dbpedia.org/resource/Expander_graph"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Fields_Medal"/>
+    <dbpedia-owl:award rdf:resource="http://dbpedia.org/resource/Medal_of_the_Coll%C3%A8ge_de_France"/>
+  </rdf:Description>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.5, Build 663)  http://protege.stanford.edu -->

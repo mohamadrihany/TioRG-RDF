@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment>UTF-8</comment>
+<entry key="cluster-threshold">0.2</entry>
+<entry key="name">scientist1000</entry>
+<entry key="cluster-expansion">0.1</entry>
+<entry key="cluster-done">false</entry>
+<entry key="graph-file">scientist1000.owl</entry>
+</properties>
