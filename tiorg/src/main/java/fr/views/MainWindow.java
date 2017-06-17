@@ -21,6 +21,7 @@ import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
@@ -33,16 +34,18 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The principal window
+ * The main window of the TioRG application.
  *
  * @author houk
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-    private static String TITLE = "RDF Graphs Exploration";
+    private final static Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
+
+    private static final String TITLE = "RDF Graphs Exploration";
+    private static final JFileChooser FILE_CHOOSER = new JFileChooser(new File(".").getAbsolutePath());
     public static MDIDesktopPane desktop;
     public static JCheckBoxMenuItem modeMenuItem;
-    private static JFileChooser fileChooser = new JFileChooser(new File(".").getAbsolutePath());
 
     public static boolean weightedGraph = false;
     public static int proc;
@@ -63,7 +66,7 @@ public class MainWindow extends JFrame {
     private JMenuItem exportMenuItem;
     private JScrollPane scrollPane;
 
-    private ProjectManager manager = null;
+    private ProjectManager projectManager = null;
 
     private boolean graphwithoutLiterals = true;
     private boolean first = true;
@@ -104,7 +107,7 @@ public class MainWindow extends JFrame {
         contentPane.setLayout(new BorderLayout());
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        menuBar = new javax.swing.JMenuBar();
+        menuBar = new JMenuBar();
 
         JMenu fileMenu = new JMenu("File");
 
@@ -182,13 +185,15 @@ public class MainWindow extends JFrame {
 
         menuBar.add(clusteringMenu);
 
-//        JMenu visualizationMenu = new javax.swing.JMenu("Visualization");
-//
-//        modeMenuItem = new JCheckBoxMenuItem("Editing Mode");
-//        modeMenuItem.addActionListener(evt -> modeMenuItemActionPerformed(evt));
-//        visualizationMenu.add(modeMenuItem);
-//
-//        menuBar.add(visualizationMenu);
+        JMenu visualizationMenu = new javax.swing.JMenu("Visualization");
+
+        modeMenuItem = new JCheckBoxMenuItem("Editing Mode");
+        modeMenuItem.addActionListener(evt -> modeMenuItemActionPerformed(evt));
+        visualizationMenu.add(modeMenuItem);
+
+        //TODO following menu is created but not displayed...
+        // modeMenuItem is static (?!?) and accessed from multiple classes
+        //menuBar.add(visualizationMenu);
 
         JMenu searchMenu = new JMenu("Search");
 
@@ -212,15 +217,15 @@ public class MainWindow extends JFrame {
     }
 
     private boolean closeCurrentProject() throws Exception {
-        if (manager != null) {
+        if (projectManager != null) {
             int result = JOptionPane.showConfirmDialog(MainWindow.this, "Save the current project ?");
             if (result == -1 || result == JOptionPane.CANCEL_OPTION)
                 return false;
 
             if (result == JOptionPane.OK_OPTION)
-                manager.save();
+                projectManager.save();
 
-            manager = null;
+            projectManager = null;
 
             for (JInternalFrame frame : desktop.getAllFrames()) {
                 frame.hide();
@@ -251,7 +256,7 @@ public class MainWindow extends JFrame {
                 if (fileDst.exists() && chooser.getMoveGraph())
                     fileSrc.delete();
 
-                manager = new ProjectManager(dir, chooser.getProjectName(), fileDst);
+                projectManager = new ProjectManager(dir, chooser.getProjectName(), fileDst);
 
                 initGraph();
             }
@@ -289,44 +294,31 @@ public class MainWindow extends JFrame {
             }
             */
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project creation error", JOptionPane.ERROR_MESSAGE);
         }
 
     }//GEN-LAST:event_nouveauMenuItemActionPerformed
 
-    private void initGraph() throws Exception {
-        if (manager != null) {
-            //recuperate graph from the selected file
-            initialGraph = manager.loadGraph();
-
-            filePath = manager.getFileGraph().getAbsolutePath();
-            //recuperate the statement of the selected graph
+    private void initGraph() throws IOException, PropertyVetoException, ClassNotFoundException {
+        if (projectManager != null) {
+            initialGraph = projectManager.loadGraph();
+            filePath = projectManager.getFileGraph().getAbsolutePath();
             initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
-
-            //instances graph
             dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
 
-            //visualize the initial graph
-
-            setTitle(TITLE + " : " + manager.getName());
-
-            mainFrame = new FirstGraphVisualization(initialGraph, manager.getProperty(ProjectManager.GRAPH_FILE), false, manager.getXY());
+            setTitle(TITLE + " : " + projectManager.getName());
+            mainFrame = new FirstGraphVisualization(initialGraph, projectManager.getProperty(ProjectManager.GRAPH_FILE), false, projectManager.getXY());
             mainFrame.setVisible(true);
             mainFrame.setClosable(false);
             desktop.add(mainFrame);
 
             exportMenuItem.setEnabled(false);
 
-            if (manager.getClusterDone())
-                runCluster();
+            if (projectManager.getClusterDone()) runCluster();
 
-            try {
-                mainFrame.setSelected(true);
-                mainFrame.setMaximum(true);
-            } catch (PropertyVetoException ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            mainFrame.setSelected(true);
+            mainFrame.setMaximum(true);
         }
     }
 
@@ -336,56 +328,56 @@ public class MainWindow extends JFrame {
      * @param evt
      */
     private void enregistrerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        if (manager != null)
+        if (projectManager != null)
             try {
-                manager.addXY(mainFrame.graphVisualization.getGraphCoordinates());
+                projectManager.addXY(mainFrame.graphVisualization.getGraphCoordinates());
                 for (JInternalFrame frame : desktop.getAllFrames()) {
                     if (frame != mainFrame) {
                         if (frame.getName().equals(ClustersVizualisation.NAME))
-                            manager.setClusterDone(true);
+                            projectManager.setClusterDone(true);
                         else if (frame.getName().equals(ClustersVizualisation.NAME_THEME)) {
                             String title = frame.getTitle();
                             title = title.replaceFirst(ClustersVizualisation.TITLE_THEME + " ?[:] ?[#][0-9]+[ ]?", "");
-                            manager.addXY(title, ((FirstGraphVisualization) frame).graphVisualization.getGraphCoordinates());
+                            projectManager.addXY(title, ((FirstGraphVisualization) frame).graphVisualization.getGraphCoordinates());
                         }
                     }
                 }
-                manager.save();
+                projectManager.save();
             } catch (Exception ex) {
-                Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project saving error", JOptionPane.ERROR_MESSAGE);
             }
     }
 
     private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            if (manager != null)
+            if (projectManager != null)
                 closeCurrentProject();
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project closing error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_enregistrerMenuItemActionPerformed
 
     private void exportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            if (manager != null) {
+            if (projectManager != null) {
                 JInternalFrame frame = desktop.getSelectedFrame();
                 if (frame.getName().equals(ClustersVizualisation.NAME_THEME)) {
                     String name = frame.getTitle().replace(ClustersVizualisation.TITLE_THEME + " : ", "");
 
-                    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-                    fileChooser.setSelectedFile(new File(name + ".owl"));
-                    int returnVal = fileChooser.showDialog(MainWindow.this, "Save");
+                    FILE_CHOOSER.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    FILE_CHOOSER.setSelectedFile(new File(name + ".owl"));
+                    int returnVal = FILE_CHOOSER.showDialog(MainWindow.this, "Save");
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         FileToModelGraph.WriteOwlFile(
-                                ((FirstGraphVisualization) frame).graph, fileChooser.getSelectedFile().getAbsolutePath()
+                                ((FirstGraphVisualization) frame).graph, FILE_CHOOSER.getSelectedFile().getAbsolutePath()
                         );
                     }
                 }
             }
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project closing error", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -398,15 +390,15 @@ public class MainWindow extends JFrame {
     private void paramClassiqueMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramClassiqueMenuItemActionPerformed
 
         ParametersFrame frame = new ParametersFrame(
-                String.valueOf(manager.getClusterThreshold()),
-                String.valueOf(manager.getClusterExpansion()),
+                String.valueOf(projectManager.getClusterThreshold()),
+                String.valueOf(projectManager.getClusterExpansion()),
                 initialGraph, desktop
         );
         frame.setModal(true);
         frame.setVisible(true);
         if (frame.getDialogResult() == JOptionPane.OK_OPTION) {
-            manager.setProperty(ProjectManager.CLUSTER_THRESHOLD, Double.toString(ParametersFrame.percentageParametre));
-            manager.setProperty(ProjectManager.CLUSTER_EXPANSION, Double.toString(ParametersFrame.optimisationParametre));
+            projectManager.setProperty(ProjectManager.CLUSTER_THRESHOLD, Double.toString(ParametersFrame.percentageParametre));
+            projectManager.setProperty(ProjectManager.CLUSTER_EXPANSION, Double.toString(ParametersFrame.optimisationParametre));
         }
         frame.dispose();
     }//GEN-LAST:event_paramClassiqueMenuItemActionPerformed
@@ -419,27 +411,27 @@ public class MainWindow extends JFrame {
     private void paramSemantiqueMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramSemantiqueMenuItemActionPerformed
         try {
             PreprocessingFrame frame = new PreprocessingFrame(
-                    initialGraph, manager.getPredicates(), manager.getQueries(),
-                    String.valueOf(manager.getClusterThreshold()),
-                    String.valueOf(manager.getClusterExpansion())
+                    initialGraph, projectManager.getPredicates(), projectManager.getQueries(),
+                    String.valueOf(projectManager.getClusterThreshold()),
+                    String.valueOf(projectManager.getClusterExpansion())
             );
             frame.setModal(true);
             frame.setVisible(true);
             if (frame.getDialogResult() == JOptionPane.OK_OPTION) {
-                manager.clearPredicates();
+                projectManager.clearPredicates();
 
                 for (Properties predicate : frame.getPredicates())
-                    manager.addPredicate(predicate);
+                    projectManager.addPredicate(predicate);
 
-                manager.clearQueries();
-                manager.getQueries().addAll(frame.getQueries());
+                projectManager.clearQueries();
+                projectManager.getQueries().addAll(frame.getQueries());
 
-                manager.setProperty(ProjectManager.CLUSTER_THRESHOLD, Double.toString(frame.getPoids()));
-                manager.setProperty(ProjectManager.CLUSTER_EXPANSION, Double.toString(frame.getOptimisations()));
+                projectManager.setProperty(ProjectManager.CLUSTER_THRESHOLD, Double.toString(frame.getPoids()));
+                projectManager.setProperty(ProjectManager.CLUSTER_EXPANSION, Double.toString(frame.getOptimisations()));
             }
             frame.dispose();
         } catch (IOException ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
     }//GEN-LAST:event_paramSemantiqueMenuItemActionPerformed
@@ -469,46 +461,29 @@ public class MainWindow extends JFrame {
                 desktop.revalidate();
                 desktop.repaint();
 
-                manager.setClusterDone(false);
+                projectManager.setClusterDone(false);
             }
 
             runCluster();
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_lancerClusteringMenuItemActionPerformed
 
-    private void runCluster() throws Exception {
-        // boolean to know if the user want to use only instancies or all the graph
-        fullGraph = PreprocessingFrame.fullGraph;
+    private void runCluster() throws IOException, ClassNotFoundException, PropertyVetoException {
+        fullGraph = PreprocessingFrame.fullGraph; // boolean to know if the user want to use only instancies or all the graph
+        graphToClustering = GraphCreation.GraphCreation(initialGraph, filePath, false, fullGraph); // graph after choosing datagraph or full graph (it can be initialGraph or dataGraph)
+        weightedGraphToClusteingWithoutLitterals = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getGraph(); // the graph to clustering with all modifications specified in the semantique caracteristics
+        listResourceRDFNodes = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getSet(); //la liste qui va nous permettre l'affichage sur le graphe initial (vertex that was regrouped)
 
-        //graphToClusteing: graph after choosing datagraph or full graph (it can be initialGraph or dataGraph)
-        graphToClustering = GraphCreation.GraphCreation(initialGraph, filePath, false, fullGraph);
-
-        // the graph to clustering with all modifications specified in the semantique caracteristics 
-
-        weightedGraphToClusteingWithoutLitterals = GraphCreation.main(graphToClustering, manager.getPredicates(), manager.getQueries()).getGraph();
-
-        ////la liste qui va nous permettre l'affichage sur le graphe initial (vertex that was regrouped)
-        listResourceRDFNodes = GraphCreation.main(graphToClustering, manager.getPredicates(), manager.getQueries()).getSet();
-
-        // systematic parameters (clustering parametres )
-
-        //The clustering class
+        // systematic parameters (clustering parameters )
         MCODEVertexWeitingWeightedGraph mcodevertexweitingweightedgraph = new MCODEVertexWeitingWeightedGraph();
-        //the list of clusters with merged nodes
-        finalClustersListwithoutLiterals = mcodevertexweitingweightedgraph.VertexWeiting(weightedGraphToClusteingWithoutLitterals, manager.getClusterThreshold(), manager.getClusterExpansion(), desktop);
+        finalClustersListwithoutLiterals = mcodevertexweitingweightedgraph.VertexWeiting(weightedGraphToClusteingWithoutLitterals, projectManager.getClusterThreshold(), projectManager.getClusterExpansion(), desktop); //the list of clusters with merged nodes
+        finalClustersList = RealClustersConstruction.main(initialGraph, finalClustersListwithoutLiterals, listResourceRDFNodes); //add litterals to clusters and construct clusters with real vertex (initial vertex)
+        SortGraphList(finalClustersList); // Sort clusters according to their size
 
-        //add litterals to clusters and construct clusters with real vertex (initial vertex)
-        finalClustersList = RealClustersConstruction.main(initialGraph, finalClustersListwithoutLiterals, listResourceRDFNodes);
-        // Sort clusters according to their size
-        SortGraphList(finalClustersList);
-
-
-        // window showing clusters
-        ClustersVizualisation frameInt = new ClustersVizualisation(
-                initialGraph, manager, finalClustersList, desktop,
-                ClustersVizualisation.TITLE + " for \"" + manager.getName() + "\""
+        ClustersVizualisation frameInt = new ClustersVizualisation(initialGraph, projectManager, finalClustersList, desktop,
+                ClustersVizualisation.TITLE + " for \"" + projectManager.getName() + "\""
         );
         frameInt.setVisible(true);
         desktop.add(frameInt);
@@ -517,23 +492,24 @@ public class MainWindow extends JFrame {
     }
 
     /**
-     * Pour ouvrir un nouveau projet, pas encore implémenté
+     * Open an existing project.
      *
-     * @param evt
+     * @param evt the action event.
      */
-    private void ouvrirMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+    private void ouvrirMenuItemActionPerformed(ActionEvent evt) {
         try {
-            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int returnVal = fileChooser.showDialog(MainWindow.this, "Project location");
+            FILE_CHOOSER.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = FILE_CHOOSER.showDialog(MainWindow.this, "Project location");
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                manager = new ProjectManager(fileChooser.getSelectedFile().getAbsolutePath());
+                projectManager = new ProjectManager(FILE_CHOOSER.getSelectedFile());
                 initGraph();
             }
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
             JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project loading error", JOptionPane.ERROR_MESSAGE);
         }
-    }//GEN-LAST:event_ouvrirMenuItemActionPerformed
+    }
+
     /**
      * Pour enregistrer les positions des noeuds du graphe dans un .txt
      *
@@ -593,26 +569,26 @@ public class MainWindow extends JFrame {
         try {
             if (Desktop.isDesktopSupported()) {
                 try {
-                    //Desktop.getDesktop().edit( manager.getKeywordsFile() );
-                    ProcessBuilder pb = new ProcessBuilder("notepad", manager.getKeywordsFile().getAbsolutePath());
+                    //Desktop.getDesktop().edit( projectManager.getKeywordsFile() );
+                    ProcessBuilder pb = new ProcessBuilder("notepad", projectManager.getKeywordsFile().getAbsolutePath());
                     pb.start();
                 } catch (Exception e) {
                 }
             } else {
-                JOptionPane.showMessageDialog(MainWindow.this, "Edit file : " + manager.getKeywordsFile().getAbsolutePath());
+                JOptionPane.showMessageDialog(MainWindow.this, "Edit file : " + projectManager.getKeywordsFile().getAbsolutePath());
             }
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ToolsMenuActionPerformed
 
     private void KeywordSearchMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            new KeywordsSearch2(manager.getDirIndex().getAbsolutePath(), manager.getXY(), desktop, manager.getKeywordsOptions()).setVisible(true);
+            new KeywordsSearch2(projectManager.getDirIndex().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
         } catch (Exception ex) {
-            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_SearchMenuActionPerformed
+    }
 
     /**
      * Orders the graph list by size
