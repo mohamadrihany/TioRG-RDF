@@ -39,8 +39,13 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-
     private static String TITLE = "RDF Graphs Exploration";
+    public static MDIDesktopPane desktop;
+    public static JCheckBoxMenuItem modeMenuItem;
+    private static JFileChooser fileChooser = new JFileChooser(new File(".").getAbsolutePath());
+
+    public static boolean weightedGraph = false;
+    public static int proc;
 
     public ArrayList<String> initialGraphEages = new ArrayList<String>();
     public DirectedGraph<RDFNode, Statement> initialGraph = new DirectedSparseGraph<>();
@@ -53,13 +58,8 @@ public class MainWindow extends JFrame {
     private DirectedSparseGraph<RDFNode, MyLink> weightedGraphToClusteingWithoutLitterals;
     private Graph<RDFNode, Statement> graphToClustering;
     private ArrayList<PairSourceSet> listResourceRDFNodes;
-    private JFileChooser fc = null;
-    public static int proc;
-
-    public static MDIDesktopPane desktop;
 
     private JMenuBar menuBar;
-    public static JCheckBoxMenuItem modeMenuItem;
     private JMenuItem exportMenuItem;
     private JScrollPane scrollPane;
 
@@ -72,8 +72,6 @@ public class MainWindow extends JFrame {
     private Collection<RDFNode> vertexToSee = new ArrayList<RDFNode>();
     private int view = 0;
 
-    public static boolean weightedGraph = false;
-
     public MainWindow() {
         proc = 0;
         initComponents();
@@ -85,12 +83,6 @@ public class MainWindow extends JFrame {
 
     public static MDIDesktopPane getDesktop() {
         return desktop;
-    }
-
-    private JFileChooser getFileChooser() {
-        if (fc == null)
-            fc = new JFileChooser(new File(".").getAbsolutePath());
-        return fc;
     }
 
     private void initComponents() {
@@ -382,12 +374,12 @@ public class MainWindow extends JFrame {
                 if (frame.getName().equals(ClustersVizualisation.NAME_THEME)) {
                     String name = frame.getTitle().replace(ClustersVizualisation.TITLE_THEME + " : ", "");
 
-                    getFileChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-                    getFileChooser().setSelectedFile(new File(name + ".owl"));
-                    int returnVal = fc.showDialog(MainWindow.this, "Save");
+                    fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                    fileChooser.setSelectedFile(new File(name + ".owl"));
+                    int returnVal = fileChooser.showDialog(MainWindow.this, "Save");
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         FileToModelGraph.WriteOwlFile(
-                                ((FirstGraphVisualization) frame).graph, getFileChooser().getSelectedFile().getAbsolutePath()
+                                ((FirstGraphVisualization) frame).graph, fileChooser.getSelectedFile().getAbsolutePath()
                         );
                     }
                 }
@@ -531,10 +523,10 @@ public class MainWindow extends JFrame {
      */
     private void ouvrirMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int returnVal = fc.showDialog(MainWindow.this, "Project location");
+            fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+            int returnVal = fileChooser.showDialog(MainWindow.this, "Project location");
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                manager = new ProjectManager(fc.getSelectedFile().getAbsolutePath());
+                manager = new ProjectManager(fileChooser.getSelectedFile().getAbsolutePath());
                 initGraph();
             }
         } catch (Exception ex) {
