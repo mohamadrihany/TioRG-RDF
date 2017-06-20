@@ -231,7 +231,7 @@ public class ProjectManager {
         return null;
     }
 
-    public void save() throws Exception {
+    public void save() throws IOException, JAXBException {
         FileOutputStream stream = null;
         try {
             stream = new FileOutputStream(fileProject);
@@ -411,7 +411,7 @@ public class ProjectManager {
         checkFileKeywords();
     }
 
-    public ProjectManager(File dir, String name, File graphFile) throws Exception {
+    public ProjectManager(File dir, String name, File graphFile) throws IOException, JAXBException {
         this.dir = dir;
         this.fileProject = new File(dir, PROJECT_FILE);
         this.filePredicates = new File(dir, PREDICATES_FILE);

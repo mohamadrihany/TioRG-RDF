@@ -303,7 +303,7 @@ public class GraphVisualizationJPanel extends JPanel {
     }
 
     public GraphVisualizationJPanel(final Graph<RDFNode, Statement> graph, Collection<RDFNode> nodesToSee, Collection<Statement> statementsToSee, HashMap<String,Point> coordinates, boolean cluster) throws IOException {
-        MainWindow.modeMenuItem.setSelected(false);
+        //MainWindow.modeMenuItem.setSelected(false); //TODO to remove ?
         layout = new FRLayout2<RDFNode, Statement>(graph);
         layout.setMaxIterations(100);
         

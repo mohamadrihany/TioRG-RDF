@@ -54,7 +54,7 @@ public class FirstGraphVisualization extends JInternalFrame {
         this.graph = graph;
         this.clusterview = clusterView;
         this.coordinates = coordinates;
-        MainWindow.modeMenuItem.setSelected(false);
+        //MainWindow.modeMenuItem.setSelected(false); //TODO to remove ?
         initComponents();
 
         setLocation(xOffset * openFrameCount, yOffset * openFrameCount);

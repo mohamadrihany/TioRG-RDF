@@ -1,26 +1,13 @@
 package fr.views;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextPane;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-
-public class CreateProject extends JDialog
+public class CreateProjectDialog extends JDialog
 {
 	private JTextPane txtProjectName = null;
 	private JTextPane txtProjectLocation = null;
@@ -57,7 +44,7 @@ public class CreateProject extends JDialog
 		return rbtMove.isSelected();
 	}
 	
-	public CreateProject() 
+	public CreateProjectDialog()
 	{
 		setModal(true);
 		setTitle("Create project");
@@ -88,37 +75,37 @@ public class CreateProject extends JDialog
 						String name = txtProjectName.getText();
 						if(name == null || name.trim().isEmpty())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this.getParent(), "Project name is empty");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this.getParent(), "Project name is empty");
 							return;
 						}
 						String txt = txtProjectLocation.getText();
 						if(txt == null || txt.trim().isEmpty())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this, "Project location is empty");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this, "Project location is empty");
 							return;
 						}
 						File file = new File( txt.trim() );
 						if(!file.isDirectory() || !file.exists())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this, "Project location error");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this, "Project location error");
 							return;
 						}
 						file = new File(file, name);
 						if(file.exists())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this, "Project location error");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this, "Project location error");
 							return;
 						}
 						txt = txtFileLocation.getText();
 						if(txt == null || txt.trim().isEmpty())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this, "Graph location is empty");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this, "Graph location is empty");
 							return;
 						}
 						file = new File( txt.trim() );
 						if(!file.isFile() || !file.exists())
 						{
-							JOptionPane.showMessageDialog(CreateProject.this, "Graph location error");
+							JOptionPane.showMessageDialog(CreateProjectDialog.this, "Graph location error");
 							return;
 						}
 						
@@ -178,7 +165,7 @@ public class CreateProject extends JDialog
 				public void actionPerformed(ActionEvent e) 
 				{
 					getFileChooser().setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					int returnVal = fc.showDialog(CreateProject.this, "Project location");
+					int returnVal = fc.showDialog(CreateProjectDialog.this, "Project location");
 					if(returnVal == JFileChooser.APPROVE_OPTION)
 						txtProjectLocation.setText( fc.getSelectedFile().getAbsolutePath() );
 				}
@@ -205,7 +192,7 @@ public class CreateProject extends JDialog
 				public void actionPerformed(ActionEvent e) 
 				{
 					getFileChooser().setFileSelectionMode(JFileChooser.FILES_ONLY);
-					int returnVal = fc.showDialog(CreateProject.this, "Graph location");
+					int returnVal = fc.showDialog(CreateProjectDialog.this, "Graph location");
 					if(returnVal == JFileChooser.APPROVE_OPTION)
 						txtFileLocation.setText( fc.getSelectedFile().getAbsolutePath() );
 				}

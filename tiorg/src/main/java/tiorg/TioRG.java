@@ -6,33 +6,51 @@ package tiorg;
 import fr.views.MainWindow;
 
 import javax.swing.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
+ * This class implements the singleton patterns to provide an application class.
  *
- * @author houk
  */
-public class TioRG {
+public enum TioRG {
+    TIORG_APP;
+
+    private final static Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
+
+    private MainWindow mainWindow;
+
+    public MainWindow getMainWindow() { return mainWindow; }
 
     /**
-     * This method calls the principal window
-     * @param args the command line arguments
-     * 
+     * Application main method.
+     *
+     * @param args command line arguments
      */
-    public static void main(String[] args) {
-        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+    public void run(String[] args) {
+        System.setProperty("java.util.Arrays.useLegacyMergeSort", "true"); //TODO what is the utility of this parameter ?
+
         try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
             }
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-                | UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(MainWindow.class.getName())
-                    .log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ex) {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
         }
 
-        java.awt.EventQueue.invokeLater(() -> new MainWindow().setVisible(true));
+        mainWindow = new MainWindow();
+        java.awt.EventQueue.invokeLater(() -> mainWindow.setVisible(true));
+    }
+
+    /**
+     * Entry point of the application.
+     *
+     * @param args command line arguments
+     */
+    public static void main(String[] args) {
+        TIORG_APP.run(args);
     }
 }

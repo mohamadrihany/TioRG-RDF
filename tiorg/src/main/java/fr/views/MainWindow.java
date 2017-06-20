@@ -18,20 +18,20 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.beans.PropertyVetoException;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * The main window of the TioRG application.
@@ -42,13 +42,13 @@ import java.util.logging.Logger;
 public class MainWindow extends JFrame {
     private final static Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
 
-    private static final String TITLE = "RDF Graphs Exploration";
+    private static final String MAIN_WINDOW_TITLE = "RDF Graphs Exploration";
     private static final JFileChooser FILE_CHOOSER = new JFileChooser(new File(".").getAbsolutePath());
-    public static MDIDesktopPane desktop;
-    public static JCheckBoxMenuItem modeMenuItem;
 
-    public static boolean weightedGraph = false;
-    public static int proc;
+    public static MDIDesktopPane desktop;
+    public static JCheckBoxMenuItem modeMenuItem; //TODO why static ?
+
+    public static boolean weightedGraph = false; //TODO not used ???
 
     public ArrayList<String> initialGraphEages = new ArrayList<String>();
     public DirectedGraph<RDFNode, Statement> initialGraph = new DirectedSparseGraph<>();
@@ -62,10 +62,6 @@ public class MainWindow extends JFrame {
     private Graph<RDFNode, Statement> graphToClustering;
     private ArrayList<PairSourceSet> listResourceRDFNodes;
 
-    private JMenuBar menuBar;
-    private JMenuItem exportMenuItem;
-    private JScrollPane scrollPane;
-
     private ProjectManager projectManager = null;
 
     private boolean graphwithoutLiterals = true;
@@ -76,229 +72,63 @@ public class MainWindow extends JFrame {
     private int view = 0;
 
     public MainWindow() {
-        proc = 0;
-        initComponents();
-        setLocationRelativeTo(null);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        setBounds(0, 0, screenSize.width, screenSize.height - 45);
+        setTitle(MAIN_WINDOW_TITLE);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-    }
-
-    public static MDIDesktopPane getDesktop() {
-        return desktop;
-    }
-
-    private void initComponents() {
         desktop = new MDIDesktopPane();
-        Container contentPane = getContentPane();
-        GroupLayout layout = new GroupLayout(contentPane);
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(desktop, GroupLayout.DEFAULT_SIZE, 1093, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-                layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                        .addComponent(desktop, GroupLayout.DEFAULT_SIZE, 709, Short.MAX_VALUE)
-        );
-
-        scrollPane = new JScrollPane();
+        JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(desktop);
+
+        Container contentPane = getContentPane();
+
         contentPane.setLayout(new BorderLayout());
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        contentPane.setPreferredSize(screenSize);
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        menuBar = new JMenuBar();
-
-        JMenu fileMenu = new JMenu("File");
-
-        JMenuItem nouveauMenuItem = new JMenuItem("New Project");
-        nouveauMenuItem.addActionListener(evt -> nouveauMenuItemActionPerformed(evt));
-        fileMenu.add(nouveauMenuItem);
-
-        JMenuItem ouvrirMenuItem = new JMenuItem("Open Project");
-        ouvrirMenuItem.addActionListener(this::ouvrirMenuItemActionPerformed);
-        fileMenu.add(ouvrirMenuItem);
-        fileMenu.addSeparator();
-
-        JMenuItem enregistrerMenuItem = new JMenuItem("Save Project");
-        enregistrerMenuItem.addActionListener(evt -> enregistrerMenuItemActionPerformed(evt));
-        fileMenu.add(enregistrerMenuItem);
-
-        JMenuItem closeMenuItem = new JMenuItem("Close Project");
-        closeMenuItem.addActionListener(this::closeMenuItemActionPerformed);
-        fileMenu.add(closeMenuItem);
-        fileMenu.addSeparator();
-
-        exportMenuItem = new JMenuItem("Export Graph");
-        exportMenuItem.setEnabled(false);
-        exportMenuItem.addActionListener(evt -> exportMenuItemActionPerformed(evt));
-        fileMenu.add(exportMenuItem);
-        //TODO to refactor
-        fileMenu.addMenuListener(
-                new MenuListener() {
-                    public void menuCanceled(MenuEvent arg0) {
-                    }
-
-                    public void menuDeselected(MenuEvent arg0) {
-                    }
-
-                    public void menuSelected(MenuEvent arg0) {
-                        if (desktop.getSelectedFrame() != null
-                                && desktop.getSelectedFrame() != mainFrame
-                                && !desktop.getSelectedFrame().getName().equals(ClustersVizualisation.NAME)
-                                )
-                            exportMenuItem.setEnabled(true);
-                        else
-                            exportMenuItem.setEnabled(false);
-                    }
-                }
-        );
-        fileMenu.addComponentListener(
-                new ComponentAdapter() {
-                    public void componentShown(ComponentEvent arg0) {
-                        if (desktop.getSelectedFrame() != null
-                                && desktop.getSelectedFrame() != mainFrame
-                                && !desktop.getSelectedFrame().getName().equals(ClustersVizualisation.NAME)
-                                )
-                            exportMenuItem.setEnabled(true);
-                        else
-                            exportMenuItem.setEnabled(false);
-                    }
-                }
-        );
-
-        menuBar.add(fileMenu);
-
-        JMenu clusteringMenu = new JMenu("Clustering");
-
-//        JMenuItem paramClassiqueMenuItem = new JMenuItem("Clustering Parameters");
-//        paramClassiqueMenuItem.addActionListener(evt -> paramClassiqueMenuItemActionPerformed(evt));
-//        clusteringMenu.add(paramClassiqueMenuItem);
-
-        JMenuItem paramSemantiqueMenuItem = new JMenuItem("Clustering Parameters");
-        paramSemantiqueMenuItem.addActionListener(evt -> paramSemantiqueMenuItemActionPerformed(evt));
-        clusteringMenu.add(paramSemantiqueMenuItem);
-
-        JMenuItem lancerClusteringMenuItem = new JMenuItem("Start the Clustering");
-        lancerClusteringMenuItem.addActionListener(evt -> lancerClusteringMenuItemActionPerformed(evt));
-        clusteringMenu.add(lancerClusteringMenuItem);
-
-        menuBar.add(clusteringMenu);
-
-        JMenu visualizationMenu = new javax.swing.JMenu("Visualization");
-
-        modeMenuItem = new JCheckBoxMenuItem("Editing Mode");
-        modeMenuItem.addActionListener(evt -> modeMenuItemActionPerformed(evt));
-        visualizationMenu.add(modeMenuItem);
-
-        //TODO following menu is created but not displayed...
-        // modeMenuItem is static (?!?) and accessed from multiple classes
-        //menuBar.add(visualizationMenu);
-
-        JMenu searchMenu = new JMenu("Search");
-
-        JMenuItem keywordSearchMenuItem = new JMenuItem("Keywords Search");
-        keywordSearchMenuItem.addActionListener(evt -> KeywordSearchMenuItemActionPerformed(evt));
-        searchMenu.add(keywordSearchMenuItem);
-
-        JMenuItem keywordOptionMenuItem = new JMenuItem("Keywords Options");
-        keywordOptionMenuItem.addActionListener(evt -> ToolsMenuActionPerformed(evt));
-        searchMenu.add(keywordOptionMenuItem);
-
-        menuBar.add(searchMenu);
-
-        menuBar.add(new WindowMenu(desktop));
+        JMenuBar menuBar = new MainMenuBar();
         setJMenuBar(menuBar);
-
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle(TITLE);
 
         pack();
     }
 
-    private boolean closeCurrentProject() throws Exception {
-        if (projectManager != null) {
-            int result = JOptionPane.showConfirmDialog(MainWindow.this, "Save the current project ?");
-            if (result == -1 || result == JOptionPane.CANCEL_OPTION)
-                return false;
-
-            if (result == JOptionPane.OK_OPTION)
-                projectManager.save();
-
-            projectManager = null;
-
-            for (JInternalFrame frame : desktop.getAllFrames()) {
-                frame.hide();
-                frame.dispose();
-            }
-
-            setTitle(TITLE);
-        }
-        return true;
+    static MDIDesktopPane getDesktop() {
+        return desktop;
     }
 
-    private void nouveauMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nouveauMenuItemActionPerformed
-        try {
-            if (!closeCurrentProject())
-                return;
-
-            CreateProject chooser = new CreateProject();
-            chooser.setVisible(true);
-            if (chooser.getDialogResult() == JOptionPane.OK_OPTION) {
-                File dir = new File(chooser.getProjectLocation());
-                String name = chooser.getProjectName();
-                dir = new File(dir, name);
-                if (!dir.mkdir())
-                    throw new IOException("Project location error");
-                File fileSrc = new File(chooser.getGraphLocation());
-                File fileDst = new File(dir, fileSrc.getName());
-                Files.copy(fileSrc.toPath(), fileDst.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                if (fileDst.exists() && chooser.getMoveGraph())
-                    fileSrc.delete();
-
-                projectManager = new ProjectManager(dir, chooser.getProjectName(), fileDst);
-
-                initGraph();
-            }
-        	/*
-            // To choose a new owl file 
-            JFileChooser.setDefaultLocale(Locale.US);
-            JFileChooser chooser = new JFileChooser();
-            chooser.setCurrentDirectory(new File(new File(".").getCanonicalPath() + File.separator + "data" + File.separator + "Graphs" + File.separator));
-            System.out.println("      " + new File(new File(".").getCanonicalPath() + File.separator + "data" + File.separator + "Graphs" + File.separator).getAbsolutePath());
-
-            int returnVal;
-            returnVal = chooser.showOpenDialog(null);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                filePath = chooser.getSelectedFile().getCanonicalPath().toLowerCase().replace("\\", "/");
-                //recuperate graph from the selected file
-                initialGraph = FileToModelGraph.FileToGraph(filePath);
-
-                //recuperate the statement of the selected graph
-                initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
-
-                //instances graph
-                dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
-
-                //visualize the initial graph
-
-                mainFrame = new FirstGraphVisualization(initialGraph, "Initial Graphe", false);
-                mainFrame.setVisible(true);
-                desktop.add(mainFrame);
-
-                try {
-                    mainFrame.setSelected(true);
-                } catch (PropertyVetoException ex) {
-                    Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            */
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project creation error", JOptionPane.ERROR_MESSAGE);
+    void newProject(String projectLocation, String projectName, String graphLocation, boolean hasToMove) throws PropertyVetoException, ClassNotFoundException, JAXBException, IOException {
+        Path parentDirectory = FileSystems.getDefault().getPath(projectLocation);
+        if (!Files.exists(parentDirectory) || !Files.isDirectory(parentDirectory)) {
+            String msg = "Project location " + parentDirectory + " does not exist or is not a directory";
+            LOGGER.log(Level.SEVERE, msg);
+            throw new IOException(msg);
         }
 
-    }//GEN-LAST:event_nouveauMenuItemActionPerformed
+        try {
+            Path projectDirectory = Files.createDirectory(parentDirectory.resolve(projectName));
+
+            Path graphSourceFile = FileSystems.getDefault().getPath(graphLocation);
+            Path graphDestinationFile = projectDirectory.resolve(graphSourceFile.getFileName());
+
+            if (hasToMove) {
+                Files.move(graphSourceFile, graphDestinationFile, REPLACE_EXISTING);
+            } else {
+                Files.copy(graphSourceFile, graphDestinationFile, REPLACE_EXISTING);
+            }
+
+            projectManager = new ProjectManager(projectDirectory.toFile(), projectName, graphDestinationFile.toFile());
+            initGraph();
+        } catch (IOException ex) {
+            String msg = "Unable to create project directory " + parentDirectory.resolve(projectName);
+            LOGGER.log(Level.SEVERE, msg, ex);
+            throw new IOException(msg, ex);
+        }
+    }
+
+    void openProject(File projectDirectory) throws JAXBException, XMLStreamException, IOException, PropertyVetoException, ClassNotFoundException {
+        projectManager = new ProjectManager(projectDirectory);
+        initGraph();
+    }
 
     private void initGraph() throws IOException, PropertyVetoException, ClassNotFoundException {
         if (projectManager != null) {
@@ -307,13 +137,13 @@ public class MainWindow extends JFrame {
             initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
             dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
 
-            setTitle(TITLE + " : " + projectManager.getName());
+            setTitle(MAIN_WINDOW_TITLE + " : " + projectManager.getName());
             mainFrame = new FirstGraphVisualization(initialGraph, projectManager.getProperty(ProjectManager.GRAPH_FILE), false, projectManager.getXY());
             mainFrame.setVisible(true);
             mainFrame.setClosable(false);
             desktop.add(mainFrame);
 
-            exportMenuItem.setEnabled(false);
+            //exportMenuItem.setEnabled(false);
 
             if (projectManager.getClusterDone()) runCluster();
 
@@ -322,44 +152,55 @@ public class MainWindow extends JFrame {
         }
     }
 
-    /**
-     * Pour enregistrer le projet en cours, pas encore implémenté
-     *
-     * @param evt
-     */
-    private void enregistrerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        if (projectManager != null)
-            try {
-                projectManager.addXY(mainFrame.graphVisualization.getGraphCoordinates());
-                for (JInternalFrame frame : desktop.getAllFrames()) {
-                    if (frame != mainFrame) {
-                        if (frame.getName().equals(ClustersVizualisation.NAME))
-                            projectManager.setClusterDone(true);
-                        else if (frame.getName().equals(ClustersVizualisation.NAME_THEME)) {
-                            String title = frame.getTitle();
-                            title = title.replaceFirst(ClustersVizualisation.TITLE_THEME + " ?[:] ?[#][0-9]+[ ]?", "");
-                            projectManager.addXY(title, ((FirstGraphVisualization) frame).graphVisualization.getGraphCoordinates());
-                        }
+    public void saveProject() {
+        if (projectManager == null) return;
+        try {
+            projectManager.addXY(mainFrame.graphVisualization.getGraphCoordinates());
+            for (JInternalFrame frame : desktop.getAllFrames()) {
+                if (frame != mainFrame) {
+                    if (frame.getName().equals(ClustersVizualisation.NAME))
+                        projectManager.setClusterDone(true);
+                    else if (frame.getName().equals(ClustersVizualisation.NAME_THEME)) {
+                        String title = frame.getTitle();
+                        title = title.replaceFirst(ClustersVizualisation.TITLE_THEME + " ?[:] ?[#][0-9]+[ ]?", "");
+                        projectManager.addXY(title, ((FirstGraphVisualization) frame).graphVisualization.getGraphCoordinates());
                     }
                 }
-                projectManager.save();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-                JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project saving error", JOptionPane.ERROR_MESSAGE);
             }
+            projectManager.save();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Project saving error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
-    private void closeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
-        try {
-            if (projectManager != null)
-                closeCurrentProject();
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project closing error", JOptionPane.ERROR_MESSAGE);
-        }
-    }//GEN-LAST:event_enregistrerMenuItemActionPerformed
+    boolean closeCurrentProject() {
+        if (projectManager != null) {
+            int result = JOptionPane.showConfirmDialog(MainWindow.this, "Save the current project ?");
+            if (result == -1 || result == JOptionPane.CANCEL_OPTION) return false;
 
-    private void exportMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+            if (result == JOptionPane.OK_OPTION) {
+                try {
+                    projectManager.save();
+                } catch (IOException | JAXBException ex) {
+                    LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+                    JOptionPane.showMessageDialog(this, ex.getMessage(), "Error while saving project", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+
+            projectManager = null;
+
+            for (JInternalFrame frame : desktop.getAllFrames()) {
+                frame.hide();
+                frame.dispose();
+            }
+
+            setTitle(MAIN_WINDOW_TITLE);
+        }
+        return true;
+    }
+
+    public void exportProject() {
         try {
             if (projectManager != null) {
                 JInternalFrame frame = desktop.getSelectedFrame();
@@ -377,38 +218,12 @@ public class MainWindow extends JFrame {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project closing error", JOptionPane.ERROR_MESSAGE);
+            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Project closing error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    /**
-     * Permet d'ouvrir une fenètre pour changer les paramètres de clustering
-     *
-     * @param evt
-     */
-    private void paramClassiqueMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramClassiqueMenuItemActionPerformed
-
-        ParametersFrame frame = new ParametersFrame(
-                String.valueOf(projectManager.getClusterThreshold()),
-                String.valueOf(projectManager.getClusterExpansion()),
-                initialGraph, desktop
-        );
-        frame.setModal(true);
-        frame.setVisible(true);
-        if (frame.getDialogResult() == JOptionPane.OK_OPTION) {
-            projectManager.setProperty(ProjectManager.CLUSTER_THRESHOLD, Double.toString(ParametersFrame.percentageParametre));
-            projectManager.setProperty(ProjectManager.CLUSTER_EXPANSION, Double.toString(ParametersFrame.optimisationParametre));
-        }
-        frame.dispose();
-    }//GEN-LAST:event_paramClassiqueMenuItemActionPerformed
-
-    /**
-     * Permet d'ouvrir une fenètre pour changer les préférences utilisateur
-     *
-     * @param evt
-     */
-    private void paramSemantiqueMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_paramSemantiqueMenuItemActionPerformed
+    public void setClusteringParameters() {
         try {
             PreprocessingFrame frame = new PreprocessingFrame(
                     initialGraph, projectManager.getPredicates(), projectManager.getQueries(),
@@ -434,7 +249,7 @@ public class MainWindow extends JFrame {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-    }//GEN-LAST:event_paramSemantiqueMenuItemActionPerformed
+    }
 
     private void lancerClusteringMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
@@ -470,6 +285,40 @@ public class MainWindow extends JFrame {
         }
     }//GEN-LAST:event_lancerClusteringMenuItemActionPerformed
 
+    public void startClustering() {
+        try {
+            ArrayList<JInternalFrame> list = desktop.getFramesLikeName(ClustersVizualisation.NAME);
+            if (list != null) {
+                list.get(0).setSelected(true);
+
+                int result = JOptionPane.showConfirmDialog(this, "Clustering is already executed.\nWould you like to close current and start a new clustering ?", "Start the Clustering", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.NO_OPTION)
+                    return;
+
+                for (JInternalFrame frame : list) {
+                    desktop.remove(frame);
+                    frame.dispose();
+                }
+
+                list = desktop.getFramesLikeName(ClustersVizualisation.NAME_THEME);
+                if (list != null)
+                    for (JInternalFrame frame : list) {
+                        desktop.remove(frame);
+                        frame.dispose();
+                    }
+
+                desktop.revalidate();
+                desktop.repaint();
+
+                projectManager.setClusterDone(false);
+            }
+
+            runCluster();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void runCluster() throws IOException, ClassNotFoundException, PropertyVetoException {
         fullGraph = PreprocessingFrame.fullGraph; // boolean to know if the user want to use only instancies or all the graph
         graphToClustering = GraphCreation.GraphCreation(initialGraph, filePath, false, fullGraph); // graph after choosing datagraph or full graph (it can be initialGraph or dataGraph)
@@ -491,30 +340,6 @@ public class MainWindow extends JFrame {
         frameInt.setSelected(true);
     }
 
-    /**
-     * Open an existing project.
-     *
-     * @param evt the action event.
-     */
-    private void ouvrirMenuItemActionPerformed(ActionEvent evt) {
-        try {
-            FILE_CHOOSER.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            int returnVal = FILE_CHOOSER.showDialog(MainWindow.this, "Project location");
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                projectManager = new ProjectManager(FILE_CHOOSER.getSelectedFile());
-                initGraph();
-            }
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, ex.getMessage(), ex);
-            JOptionPane.showMessageDialog(MainWindow.this, ex.getMessage(), "Project loading error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    /**
-     * Pour enregistrer les positions des noeuds du graphe dans un .txt
-     *
-     * @param evt
-     */
     /**
      * Gestion du mode d'affichage, deux modes utilisés: mode PICKING pour faire bouger les noeuds et mode TRANSFORMING pour faire bouger le graphe entier
      *
@@ -582,7 +407,32 @@ public class MainWindow extends JFrame {
         }
     }//GEN-LAST:event_ToolsMenuActionPerformed
 
+    public void setSearchOptions() {
+        try {
+            if (Desktop.isDesktopSupported()) {
+                try {
+                    //Desktop.getDesktop().edit( projectManager.getKeywordsFile() );
+                    ProcessBuilder pb = new ProcessBuilder("notepad", projectManager.getKeywordsFile().getAbsolutePath());
+                    pb.start();
+                } catch (Exception e) {
+                }
+            } else {
+                JOptionPane.showMessageDialog(MainWindow.this, "Edit file : " + projectManager.getKeywordsFile().getAbsolutePath());
+            }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
     private void KeywordSearchMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
+        try {
+            new KeywordsSearch2(projectManager.getDirIndex().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void search() {
         try {
             new KeywordsSearch2(projectManager.getDirIndex().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
         } catch (Exception ex) {
@@ -614,5 +464,11 @@ public class MainWindow extends JFrame {
                 return 0;
             }
         }
+    }
+
+    boolean isExportMenuActivated() {
+        return desktop.getSelectedFrame() != null
+                && desktop.getSelectedFrame() != mainFrame
+                && !desktop.getSelectedFrame().getName().equals(ClustersVizualisation.NAME);
     }
 }
