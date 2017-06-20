@@ -259,7 +259,7 @@ public class KeywordsSearch2 extends javax.swing.JFrame {
 		// try {
 		// ElementsManagment.main(keywords);
 		// } catch (Exception ex) {
-		// Logger.getLogger(KeyWordsSearch.class.getName()).log(Level.SEVERE, null, ex); }
+		// Logger.getLogger(KeyWordsSearch.class.getProjectName()).log(Level.SEVERE, null, ex); }
 
 	}
     // Variables declaration - do not modify

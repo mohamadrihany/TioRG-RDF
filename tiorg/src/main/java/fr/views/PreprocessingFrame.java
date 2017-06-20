@@ -920,7 +920,7 @@ public class PreprocessingFrame extends javax.swing.JDialog
 		}
 		catch(IOException ex)
 		{
-			Logger.getLogger(PreprocessingFrame.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PreprocessingFrame.class.getProjectName()).log(Level.SEVERE, null, ex);
 		}
 		try
 		{
@@ -961,7 +961,7 @@ public class PreprocessingFrame extends javax.swing.JDialog
 		}
 		catch(IOException ex)
 		{
-			Logger.getLogger(PreprocessingFrame.class.getName()).log(Level.SEVERE, null, ex);
+			Logger.getLogger(PreprocessingFrame.class.getProjectName()).log(Level.SEVERE, null, ex);
 		}
 		MainWindow.weightedGraph = true;
 		MainWindow.proc++;

@@ -21,51 +21,186 @@ import java.io.*;
 import java.util.*;
 
 public class ProjectManager {
-    public static String PROJECT_NAME = "name";
+    private static final String PROJECT_NAME = "tiorg-project-projectName";
 
-    public static String GRAPH_FILE = "graph-file";
-    public static String GRAPH_PREDICATES = "graph-predicates";
-    public static String CLUSTER_THRESHOLD = "cluster-threshold";
-    public static String CLUSTER_EXPANSION = "cluster-expansion";
-    public static String CLUSTER_DONE = "cluster-done";
+    private static final String PROJECT_FILENAME = "project.xml";
+    private static final String INDEX_DIRECTORY = "index";
+    public static final String GRAPH_FILENAME = "graph-file";
+    private static final String PREDICATES_FILENAME = "predicates.xml";
+    private static final String QUERIES_FILENAME = "queries.xml";
+    private static final String XY_FILENAME = "project_xy.xml";
+    private static final String KEYWORDS_FILENAME = "keywords_search.xml";
 
-    public static String PREDICATE_NAME = "name";
-    public static String PREDICATE_CRITERIA = "criteria";
-    public static String PREDICATE_VALUE = "value";
+    public static final String CLUSTER_THRESHOLD = "cluster-threshold";
+    public static final String CLUSTER_EXPANSION = "cluster-expansion";
+    public static final String CLUSTER_DONE = "cluster-done";
 
-    public static String PROJECT_FILE = "project.xml";
-    public static String INDEX_DIR = "index";
-    public static String PREDICATES_FILE = "predicates.xml";
-    public static String QUERIES_FILE = "queries.xml";
-    public static String XY_FILE = "project_xy.xml";
-    public static String KEYWORDS_FILE = "keywords_search.xml";
+    public static final String PREDICATE_NAME = "name";
+    public static final String PREDICATE_CRITERIA = "criteria";
+    public static final String PREDICATE_VALUE = "value";
 
-    private File dir;
-    private File fileProject;
-    private File dirIndex;
-    private File fileGraph;
-    private File filePredicates;
-    private File fileQueries;
-    private File fileXY;
-    private File fileKeywords;
 
-    private String name;
+    private File projectDirectory;
+    private File projectFile;
+    private File indexDirectory;
+    private File graphFile;
+    private File predicatesFile;
+    private File queriesFile;
+    private File xyFile;
+    private File keywordsFile;
+
+    private String projectName;
     private Properties properties;
     private Properties predicates;
     private ArrayList<String> queries;
     private HashMap<String, HashMap<String, Point>> projectXY;
 
+    public ProjectManager(File projectDirectory, String name, File graphFile) throws IOException, JAXBException {
+        this.projectDirectory = projectDirectory;
+        this.projectFile = new File(projectDirectory, PROJECT_FILENAME);
+        this.indexDirectory = new File(projectDirectory, INDEX_DIRECTORY);
+        this.predicatesFile = new File(projectDirectory, PREDICATES_FILENAME);
+        this.queriesFile = new File(projectDirectory, QUERIES_FILENAME);
+        this.xyFile = new File(projectDirectory, XY_FILENAME);
+        this.keywordsFile = new File(projectDirectory, KEYWORDS_FILENAME);
 
-    public File getDir() {
-        return dir;
+        this.projectName = name;
+        this.predicates = new Properties();
+        this.queries = new ArrayList<String>();
+        this.projectXY = new HashMap<String, HashMap<String, Point>>();
+
+        this.properties = new Properties();
+        properties.setProperty(PROJECT_NAME, name);
+        properties.setProperty(GRAPH_FILENAME, graphFile.getName());
+        properties.setProperty(CLUSTER_THRESHOLD, Double.toString(0.2));
+        properties.setProperty(CLUSTER_EXPANSION, Double.toString(0.1));
+        properties.setProperty(CLUSTER_DONE, Boolean.toString(false));
+
+        clearPredicates();
+        save();
+        createIndex();
+        checkFileKeywords();
     }
 
-    public File getFileGraph() {
-        return fileGraph;
+    public void clearPredicates() {
+        predicates.clear();
     }
 
-    public String getName() {
-        return name;
+    public void save() throws IOException, JAXBException {
+        try (FileOutputStream stream = new FileOutputStream(projectFile)) {
+            properties.storeToXML(stream, null, "UTF-8");
+        }
+
+        try (FileOutputStream stream = new FileOutputStream(predicatesFile)) {
+            ProjectPredicates predicateList = new ProjectPredicates();
+            for (Map.Entry<Object, Object> predicate : predicates.entrySet()) {
+                ProjectPredicate currentPredicate = new ProjectPredicate();
+                currentPredicate.add(new MapElements(PREDICATE_NAME, predicate.getKey().toString()));
+                for (Map.Entry<Object, Object> val : ((Properties) predicate.getValue()).entrySet())
+                    currentPredicate.add(new MapElements(val.getKey().toString(), val.getValue().toString()));
+                predicateList.add(currentPredicate);
+            } //TODO why converting predicates before storing in file ?
+
+            StringWriter xmlWriter = new StringWriter();
+            JAXBContext context = JAXBContext.newInstance(ProjectPredicates.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.marshal(predicateList, xmlWriter);
+
+            stream.write(xmlWriter.toString().getBytes());
+        }
+
+        try (FileOutputStream stream = new FileOutputStream(queriesFile)) {
+            ProjectQueries array = new ProjectQueries(queries);
+
+            StringWriter xmlWriter = new StringWriter();
+            JAXBContext context = JAXBContext.newInstance(ProjectQueries.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.marshal(array, xmlWriter);
+
+            stream.write(xmlWriter.toString().getBytes());
+        }
+
+        try (FileOutputStream stream = new FileOutputStream(xyFile)) {
+            ProjectXY array = new ProjectXY();
+            for (Map.Entry<String, HashMap<String, Point>> graph : projectXY.entrySet()) {
+                GraphXY cur = new GraphXY();
+                cur.coordinates = new ArrayList<NodeXY>();
+
+                cur.name = graph.getKey();
+                for (Map.Entry<String, Point> node : graph.getValue().entrySet())
+                    cur.coordinates.add(new NodeXY(node.getKey(), node.getValue().x, node.getValue().y));
+
+                array.add(cur);
+            }
+
+            StringWriter xmlWriter = new StringWriter();
+            JAXBContext context = JAXBContext.newInstance(ProjectXY.class);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+            marshaller.marshal(array, xmlWriter);
+
+            stream.write(xmlWriter.toString().getBytes());
+        }
+    }
+
+    private void createIndex() throws IOException {
+        checkGraphFile();
+        new IndexElements(indexDirectory.getAbsolutePath(), getGraphFile().getAbsolutePath()).run();
+    }
+
+    private void checkGraphFile() throws IOException {
+        if (graphFile == null) {
+            graphFile = new File(projectDirectory, properties.getProperty(GRAPH_FILENAME));
+            if (!graphFile.isFile() || !graphFile.exists())
+                throw new IOException("Graph location error");
+        }
+    }
+
+    private void checkFileKeywords() throws IOException {
+        if (keywordsFile == null)
+            keywordsFile = new File(projectDirectory, KEYWORDS_FILENAME);
+        if (!keywordsFile.exists()) {
+            InputStream input = null;
+            OutputStream output = null;
+            try {
+                input = getClass().getResourceAsStream("/keywords_search.xml");
+                output = new FileOutputStream(keywordsFile);
+                int read;
+                byte[] bytes = new byte[1024];
+                while ((read = input.read(bytes)) != -1) {
+                    output.write(bytes, 0, read);
+                }
+            } finally {
+                if (input != null)
+                    try {
+                        input.close();
+                    } catch (Exception ex) {
+                    }
+
+                if (output != null)
+                    try {
+                        output.close();
+                    } catch (Exception ex) {
+                    }
+            }
+        }
+    }
+
+    public File getProjectDirectory() {
+        return projectDirectory;
+    }
+
+    public File getGraphFile() {
+        return graphFile;
+    }
+
+    public String getProjectName() {
+        return projectName;
     }
 
     public Properties getProperties() {
@@ -115,10 +250,6 @@ public class ProjectManager {
         }
     }
 
-    public void clearPredicates() {
-        predicates.clear();
-    }
-
     public void addPredicate(Properties predicate) {
         String name = (String) predicate.remove(PREDICATE_NAME);
         if (name != null) {
@@ -161,44 +292,6 @@ public class ProjectManager {
         return projectXY.get(graphName);
     }
 
-    private void checkFileGraph() throws IOException {
-        if (fileGraph == null) {
-            fileGraph = new File(dir, properties.getProperty(GRAPH_FILE));
-            if (!fileGraph.isFile() || !fileGraph.exists())
-                throw new IOException("Graph location error");
-        }
-    }
-
-    private void checkFileKeywords() throws IOException {
-        if (fileKeywords == null)
-            fileKeywords = new File(dir, KEYWORDS_FILE);
-        if (!fileKeywords.exists()) {
-            InputStream input = null;
-            OutputStream output = null;
-            try {
-                input = getClass().getResourceAsStream("/keywords_search.xml");
-                output = new FileOutputStream(fileKeywords);
-                int read;
-                byte[] bytes = new byte[1024];
-                while ((read = input.read(bytes)) != -1) {
-                    output.write(bytes, 0, read);
-                }
-            } finally {
-                if (input != null)
-                    try {
-                        input.close();
-                    } catch (Exception ex) {
-                    }
-
-                if (output != null)
-                    try {
-                        output.close();
-                    } catch (Exception ex) {
-                    }
-            }
-        }
-    }
-
     public void setProperty(String property, String value) {
         properties.setProperty(property, value);
     }
@@ -208,22 +301,22 @@ public class ProjectManager {
     }
 
     public DirectedGraph<RDFNode, Statement> loadGraph() throws IOException {
-        checkFileGraph();
-        return FileToModelGraph.FileToGraph(fileGraph.getAbsolutePath());
+        checkGraphFile();
+        return FileToModelGraph.FileToGraph(graphFile.getAbsolutePath());
     }
 
-    public File getDirIndex() {
-        return dirIndex;
+    public File getIndexDirectory() {
+        return indexDirectory;
     }
 
     public File getKeywordsFile() {
-        return fileKeywords;
+        return keywordsFile;
     }
 
     public Element getKeywordsOptions() {
-        if (fileKeywords.exists()) {
+        if (keywordsFile.exists()) {
             try {
-                return ReadXML.main(fileKeywords.getAbsolutePath());
+                return ReadXML.main(keywordsFile.getAbsolutePath());
             } catch (Exception e) {
 
             }
@@ -231,130 +324,29 @@ public class ProjectManager {
         return null;
     }
 
-    public void save() throws IOException, JAXBException {
-        FileOutputStream stream = null;
-        try {
-            stream = new FileOutputStream(fileProject);
-            properties.storeToXML(stream, "UTF-8");
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (Exception e) {
-                }
-        }
-
-
-        try {
-            ProjectPredicates array = new ProjectPredicates();
-            if (!predicates.isEmpty()) {
-                for (Map.Entry<Object, Object> predicate : predicates.entrySet()) {
-                    ProjectPredicate cur = new ProjectPredicate();
-                    cur.add(new MapElements(PREDICATE_NAME, predicate.getKey().toString()));
-                    for (Map.Entry<Object, Object> val : ((Properties) predicate.getValue()).entrySet())
-                        cur.add(new MapElements(val.getKey().toString(), val.getValue().toString()));
-                    array.add(cur);
-                }
-            }
-
-            StringWriter xmlWriter = new StringWriter();
-            JAXBContext context = JAXBContext.newInstance(ProjectPredicates.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            marshaller.marshal(array, xmlWriter);
-
-            stream = new FileOutputStream(filePredicates);
-            stream.write(xmlWriter.toString().getBytes());
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (Exception e) {
-                }
-        }
-
-        try {
-            ProjectQueries array = new ProjectQueries(queries);
-
-            StringWriter xmlWriter = new StringWriter();
-            JAXBContext context = JAXBContext.newInstance(ProjectQueries.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            marshaller.marshal(array, xmlWriter);
-
-            stream = new FileOutputStream(fileQueries);
-            stream.write(xmlWriter.toString().getBytes());
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (Exception e) {
-                }
-        }
-
-        try {
-            ProjectXY array = new ProjectXY();
-            if (!projectXY.isEmpty()) {
-                for (Map.Entry<String, HashMap<String, Point>> graph : projectXY.entrySet()) {
-                    GraphXY cur = new GraphXY();
-                    cur.coordinates = new ArrayList<NodeXY>();
-
-                    cur.name = graph.getKey();
-                    for (Map.Entry<String, Point> node : graph.getValue().entrySet())
-                        cur.coordinates.add(new NodeXY(node.getKey(), node.getValue().x, node.getValue().y));
-
-                    array.add(cur);
-                }
-            }
-
-            StringWriter xmlWriter = new StringWriter();
-            JAXBContext context = JAXBContext.newInstance(ProjectXY.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-            marshaller.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-            marshaller.marshal(array, xmlWriter);
-
-            stream = new FileOutputStream(fileXY);
-            stream.write(xmlWriter.toString().getBytes());
-        } finally {
-            if (stream != null)
-                try {
-                    stream.close();
-                } catch (Exception e) {
-                }
-        }
-    }
-
-    private void createIndex() throws IOException {
-        checkFileGraph();
-        new IndexElements(dirIndex.getAbsolutePath(), getFileGraph().getAbsolutePath()).run();
-    }
-
     public ProjectManager(File dirPath) throws IOException, XMLStreamException, JAXBException {
-        dir = dirPath;
-        if (!dir.exists()) throw new IOException("Project directory " + dir + " does not exist");
-        if (!dir.isDirectory())
-            throw new IOException("Project directory name " + dir + " exists but is not a directory");
+        projectDirectory = dirPath;
+        if (!projectDirectory.exists()) throw new IOException("Project directory " + projectDirectory + " does not exist");
+        if (!projectDirectory.isDirectory())
+            throw new IOException("Project directory projectName " + projectDirectory + " exists but is not a directory");
 
-        fileProject = new File(dir, PROJECT_FILE);
-        if (!fileProject.exists()) throw new IOException("Project file " + fileProject + " does not exist");
-        if (!fileProject.isFile())
-            throw new IOException("Project file name " + fileProject + " exists but is not a file");
+        projectFile = new File(projectDirectory, PROJECT_FILENAME);
+        if (!projectFile.exists()) throw new IOException("Project file " + projectFile + " does not exist");
+        if (!projectFile.isFile())
+            throw new IOException("Project file projectName " + projectFile + " exists but is not a file");
 
         properties = new Properties();
-        try (FileInputStream stream = new FileInputStream(fileProject)) {
+        try (FileInputStream stream = new FileInputStream(projectFile)) {
             properties.loadFromXML(stream);
         }
 
-        name = properties.getProperty(PROJECT_NAME);
-        checkFileGraph();
+        projectName = properties.getProperty(PROJECT_NAME);
+        checkGraphFile();
 
         this.predicates = new Properties();
-        this.filePredicates = new File(dir, PREDICATES_FILE);
-        if (filePredicates.exists()) {
-            try (FileInputStream stream = new FileInputStream(filePredicates)) {
+        this.predicatesFile = new File(projectDirectory, PREDICATES_FILENAME);
+        if (predicatesFile.exists()) {
+            try (FileInputStream stream = new FileInputStream(predicatesFile)) {
                 XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(stream, "UTF-8");
 
                 JAXBContext context = JAXBContext.newInstance(ProjectPredicates.class);
@@ -374,9 +366,9 @@ public class ProjectManager {
         }
 
         this.queries = new ArrayList<>();
-        this.fileQueries = new File(dir, QUERIES_FILE);
-        if (fileQueries.exists()) {
-            try (FileInputStream stream = new FileInputStream(fileQueries)) {
+        this.queriesFile = new File(projectDirectory, QUERIES_FILENAME);
+        if (queriesFile.exists()) {
+            try (FileInputStream stream = new FileInputStream(queriesFile)) {
                 XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(stream, "UTF-8");
 
                 JAXBContext context = JAXBContext.newInstance(ProjectQueries.class);
@@ -386,9 +378,9 @@ public class ProjectManager {
         }
 
         this.projectXY = new HashMap<>();
-        this.fileXY = new File(dir, XY_FILE);
-        if (fileXY.exists()) {
-            try (FileInputStream stream = new FileInputStream(fileXY)) {
+        this.xyFile = new File(projectDirectory, XY_FILENAME);
+        if (xyFile.exists()) {
+            try (FileInputStream stream = new FileInputStream(xyFile)) {
                 XMLStreamReader xmlReader = XMLInputFactory.newInstance().createXMLStreamReader(stream, "UTF-8");
 
                 JAXBContext context = JAXBContext.newInstance(ProjectXY.class);
@@ -404,34 +396,10 @@ public class ProjectManager {
             }
         }
 
-        this.dirIndex = new File(dir, INDEX_DIR);
-        if (!dirIndex.exists())
+        this.indexDirectory = new File(projectDirectory, INDEX_DIRECTORY);
+        if (!indexDirectory.exists())
             createIndex();
 
-        checkFileKeywords();
-    }
-
-    public ProjectManager(File dir, String name, File graphFile) throws IOException, JAXBException {
-        this.dir = dir;
-        this.fileProject = new File(dir, PROJECT_FILE);
-        this.filePredicates = new File(dir, PREDICATES_FILE);
-        this.fileQueries = new File(dir, QUERIES_FILE);
-        this.fileXY = new File(dir, XY_FILE);
-        this.dirIndex = new File(dir, INDEX_DIR);
-        this.fileKeywords = new File(dir, KEYWORDS_FILE);
-        this.name = name;
-        this.properties = new Properties();
-        this.predicates = new Properties();
-        this.queries = new ArrayList<String>();
-        this.projectXY = new HashMap<String, HashMap<String, Point>>();
-        properties.setProperty(PROJECT_NAME, name);
-        properties.setProperty(GRAPH_FILE, graphFile.getName());
-        properties.setProperty(CLUSTER_THRESHOLD, Double.toString(0.2));
-        properties.setProperty(CLUSTER_EXPANSION, Double.toString(0.1));
-        properties.setProperty(CLUSTER_DONE, Boolean.toString(false));
-        clearPredicates();
-        save();
-        createIndex();
         checkFileKeywords();
     }
 

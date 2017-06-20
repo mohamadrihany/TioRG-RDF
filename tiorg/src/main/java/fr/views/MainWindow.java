@@ -127,12 +127,12 @@ public class MainWindow extends JFrame {
     private void initGraph() throws IOException, PropertyVetoException, ClassNotFoundException {
         if (projectManager != null) {
             initialGraph = projectManager.loadGraph();
-            filePath = projectManager.getFileGraph().getAbsolutePath();
+            filePath = projectManager.getGraphFile().getAbsolutePath();
             initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
             dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
 
-            setTitle(MAIN_WINDOW_TITLE + " : " + projectManager.getName());
-            mainFrame = new FirstGraphVisualization(initialGraph, projectManager.getProperty(ProjectManager.GRAPH_FILE), false, projectManager.getXY());
+            setTitle(MAIN_WINDOW_TITLE + " : " + projectManager.getProjectName());
+            mainFrame = new FirstGraphVisualization(initialGraph, projectManager.getProperty(ProjectManager.GRAPH_FILENAME), false, projectManager.getXY());
             mainFrame.setVisible(true);
             mainFrame.setClosable(false);
             desktop.add(mainFrame);
@@ -326,7 +326,7 @@ public class MainWindow extends JFrame {
         SortGraphList(finalClustersList); // Sort clusters according to their size
 
         ClustersVizualisation frameInt = new ClustersVizualisation(initialGraph, projectManager, finalClustersList, desktop,
-                ClustersVizualisation.TITLE + " for \"" + projectManager.getName() + "\""
+                ClustersVizualisation.TITLE + " for \"" + projectManager.getProjectName() + "\""
         );
         frameInt.setVisible(true);
         desktop.add(frameInt);
@@ -375,7 +375,7 @@ public class MainWindow extends JFrame {
 
     private void KeywordSearchMenuItemActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            new KeywordsSearch2(projectManager.getDirIndex().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
+            new KeywordsSearch2(projectManager.getIndexDirectory().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
@@ -383,7 +383,7 @@ public class MainWindow extends JFrame {
 
     public void search() {
         try {
-            new KeywordsSearch2(projectManager.getDirIndex().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
+            new KeywordsSearch2(projectManager.getIndexDirectory().getAbsolutePath(), projectManager.getXY(), desktop, projectManager.getKeywordsOptions()).setVisible(true);
         } catch (Exception ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
