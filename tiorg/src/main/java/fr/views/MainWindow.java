@@ -5,7 +5,6 @@ import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import fr.clustering.MCODEVertexWeitingWeightedGraph;
 import fr.clustering.MCODEVertexWeitingWeightedGraph.MyLink;
@@ -40,15 +39,12 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
  */
 @SuppressWarnings("serial")
 public class MainWindow extends JFrame {
-    private final static Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
 
     private static final String MAIN_WINDOW_TITLE = "RDF Graphs Exploration";
     private static final JFileChooser FILE_CHOOSER = new JFileChooser(new File(".").getAbsolutePath());
 
-    public static MDIDesktopPane desktop;
-    public static JCheckBoxMenuItem modeMenuItem; //TODO why static ?
-
-    public static boolean weightedGraph = false; //TODO not used ???
+    private MDIDesktopPane desktop;
 
     public ArrayList<String> initialGraphEages = new ArrayList<String>();
     public DirectedGraph<RDFNode, Statement> initialGraph = new DirectedSparseGraph<>();
@@ -64,8 +60,6 @@ public class MainWindow extends JFrame {
 
     private ProjectManager projectManager = null;
 
-    private boolean graphwithoutLiterals = true;
-    private boolean first = true;
     private boolean fullGraph = PreprocessingFrame.fullGraph;
     private ArrayList<Graph> finalClustersList = new ArrayList<Graph>();
     private Collection<RDFNode> vertexToSee = new ArrayList<RDFNode>();
@@ -86,13 +80,13 @@ public class MainWindow extends JFrame {
         contentPane.setPreferredSize(screenSize);
         contentPane.add(scrollPane, BorderLayout.CENTER);
 
-        JMenuBar menuBar = new MainMenuBar();
+        JMenuBar menuBar = new MainMenuBar(desktop);
         setJMenuBar(menuBar);
 
         pack();
     }
 
-    static MDIDesktopPane getDesktop() {
+    MDIDesktopPane getDesktop() {
         return desktop;
     }
 
@@ -339,51 +333,6 @@ public class MainWindow extends JFrame {
         frameInt.setMaximum(true);
         frameInt.setSelected(true);
     }
-
-    /**
-     * Gestion du mode d'affichage, deux modes utilisés: mode PICKING pour faire bouger les noeuds et mode TRANSFORMING pour faire bouger le graphe entier
-     *
-     * @param evt
-     */
-    private void modeMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modeMenuItemActionPerformed
-        if (modeMenuItem.isSelected()) {
-            if ("firstVisualisation".equals(desktop.getSelectedFrame().getName())) {
-                FirstGraphVisualization internalFram = (FirstGraphVisualization) desktop.getSelectedFrame();
-                vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                vv2.setMode(ModalGraphMouse.Mode.PICKING);
-
-            } else {
-                if ("queriesVisualisation".equals(desktop.getSelectedFrame().getName())) {
-                    QueriesVizualisation internalFram = (QueriesVizualisation) desktop.getSelectedFrame();
-                    vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                    vv2.setMode(ModalGraphMouse.Mode.PICKING);
-                } else {
-                    ClustersVizualisation internalFram = (ClustersVizualisation) desktop.getSelectedFrame();
-                    vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                    vv2.setMode(ModalGraphMouse.Mode.PICKING);
-                }
-            }
-        } else {
-            if ("firstVisualisation".equals(desktop.getSelectedFrame().getName())) {
-                FirstGraphVisualization internalFram = (FirstGraphVisualization) desktop.getSelectedFrame();
-                vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                vv2.setMode(ModalGraphMouse.Mode.TRANSFORMING);
-
-            } else {
-                if ("queriesVisualisation".equals(desktop.getSelectedFrame().getName())) {
-                    QueriesVizualisation internalFram = (QueriesVizualisation) desktop.getSelectedFrame();
-                    vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                    vv2.setMode(ModalGraphMouse.Mode.PICKING);
-                } else {
-                    ClustersVizualisation internalFram = (ClustersVizualisation) desktop.getSelectedFrame();
-                    vv2 = (DefaultModalGraphMouse<RDFNode, Statement>) internalFram.vv.getGraphMouse();
-                    vv2.setMode(ModalGraphMouse.Mode.TRANSFORMING);
-                }
-            }
-        }
-        this.repaint();
-        this.revalidate();
-    }//GEN-LAST:event_modeMenuItemActionPerformed
 
     /**
      * Le recherche mots clés

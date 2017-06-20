@@ -4,7 +4,22 @@
  */
 package fr.views;
 
-import java.awt.Point;
+import edu.uci.ics.jung.graph.DirectedGraph;
+import edu.uci.ics.jung.graph.DirectedSparseGraph;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.UndirectedSparseGraph;
+import edu.uci.ics.jung.graph.util.EdgeType;
+import fr.processings.FileToModelGraph;
+import fr.processings.FromDirectedToUndirectedGraph;
+import fr.search.ElementsManagment;
+import fr.search.Ranking;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.rdf.model.Statement;
+import org.jdom2.Element;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -13,24 +28,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.JDesktopPane;
-import javax.swing.JInternalFrame;
-
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.RDFNode;
-import org.apache.jena.rdf.model.Statement;
-import org.jdom2.Element;
-
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.graph.SparseGraph;
-import edu.uci.ics.jung.graph.UndirectedSparseGraph;
-import edu.uci.ics.jung.graph.util.EdgeType;
-import fr.processings.FileToModelGraph;
-import fr.processings.FromDirectedToUndirectedGraph;
-import fr.search.ElementsManagment;
-import fr.search.Ranking;
+import static tiorg.TioRG.TIORG_APP;
 
 /**
  *
@@ -195,7 +193,7 @@ public class KeywordsSearch2 extends javax.swing.JFrame {
 			Model modelTosearch;
 			ArrayList<Ranking.TupleResultScore> modelList = new ArrayList<>();
 			
-			JInternalFrame curFrame = MainWindow.getDesktop().getSelectedFrame();
+			JInternalFrame curFrame = TIORG_APP.getMainWindow().getDesktop().getSelectedFrame();
 			// Récupération du graphe en cours
 			if(curFrame.getName() != null)
 			{

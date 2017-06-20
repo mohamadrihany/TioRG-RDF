@@ -27,6 +27,8 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static tiorg.TioRG.TIORG_APP;
+
 /**
  * @author houk
  */
@@ -338,7 +340,7 @@ public class FirstGraphVisualization extends JInternalFrame {
                             if (graph != null) {
                                 FirstGraphVisualization frame = new FirstGraphVisualization(graph, getTitle() + " : " + "Sub-graph [" + graph.getVertexCount() + "x" + graph.getEdgeCount() + "]", false, graphVisualization.getGraphCoordinates());
                                 frame.setVisible(true);
-                                MainWindow.desktop.add(frame);
+                                TIORG_APP.getMainWindow().getDesktop().add(frame);
                                 frame.setSelected(true);
                                 frame.setMaximum(true);
                             }

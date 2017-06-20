@@ -4,53 +4,33 @@
  */
 package fr.views;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.HeadlessException;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.beans.PropertyVetoException;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.BoxLayout;
-import javax.swing.DefaultCellEditor;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.LayoutStyle.ComponentPlacement;
-import javax.swing.SwingConstants;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
-
+import edu.uci.ics.jung.graph.Graph;
+import fr.preprocessing.GraphCreation;
+import fr.processings.ReadXMLFile.MyElementWithString;
 import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 
-import edu.uci.ics.jung.graph.Graph;
-import fr.preprocessing.GraphCreation;
-import fr.processings.ReadXMLFile.MyElementWithString;
+import javax.swing.*;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableColumnModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static tiorg.TioRG.TIORG_APP;
 
 /**
  * @author houk
@@ -902,7 +882,7 @@ public class PreprocessingFrame extends javax.swing.JDialog
 			FirstGraphVisualization firstframeInt = new FirstGraphVisualization(globalGraphInter,
 					"Visualization of the Resulting Graph", true, null);
 			firstframeInt.setVisible(true); // necessary as of 1.3
-			MainWindow.desktop.add(firstframeInt);
+			TIORG_APP.getMainWindow().getDesktop().add(firstframeInt);
 			firstframeInt.setSelected(true);
 
 		}

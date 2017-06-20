@@ -13,11 +13,11 @@ import static tiorg.TioRG.TIORG_APP;
 public class MainMenuBar extends JMenuBar {
     private final static Logger LOGGER = Logger.getLogger(MainWindow.class.getName());
 
-    public MainMenuBar() {
+    public MainMenuBar(MDIDesktopPane desktop) {
         createFileMenu();
         createClusteringMenu();
         createSearchMenu();
-        createWindowMenu();
+        createWindowMenu(desktop);
     }
 
     private void createFileMenu() {
@@ -83,8 +83,8 @@ public class MainMenuBar extends JMenuBar {
         add(searchMenu);
     }
 
-    private void createWindowMenu() {
-        add(new WindowMenu(MainWindow.getDesktop()));
+    private void createWindowMenu(MDIDesktopPane desktop) {
+        add(new WindowMenu(desktop));
     }
 
     private void newProjectActionPerformed(ActionEvent evt) {
