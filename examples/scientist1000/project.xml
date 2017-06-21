@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <entry key="cluster-threshold">0.2</entry>
-<entry key="tiorg-project-projectName">scientist1000-2</entry>
+<entry key="fr.uvsq.adam.tiorg-project-projectName">scientist1000-2</entry>
 <entry key="cluster-expansion">0.1</entry>
 <entry key="cluster-done">false</entry>
 <entry key="graph-file">scientist1000.owl</entry>
