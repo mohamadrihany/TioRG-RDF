@@ -1,19 +1,16 @@
 package fr.uvsq.adam.tiorg.views;
 
-import fr.uvsq.adam.processings.GetGraphInfo;
-import fr.uvsq.adam.processings.SharedFeature;
 import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseGraph;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.Hypergraph;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
 import fr.uvsq.adam.clustering.MCODEVertexWeitingWeightedGraph;
 import fr.uvsq.adam.clustering.MCODEVertexWeitingWeightedGraph.MyLink;
 import fr.uvsq.adam.preprocessing.GraphCreation;
 import fr.uvsq.adam.processings.FileToModelGraph;
+import fr.uvsq.adam.processings.GetGraphInfo;
 import fr.uvsq.adam.processings.RealClustersConstruction;
+import fr.uvsq.adam.processings.SharedFeature;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Statement;
 
@@ -27,7 +24,9 @@ import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,25 +44,10 @@ public class MainWindow extends JFrame {
     private static final JFileChooser FILE_CHOOSER = new JFileChooser(new File(".").getAbsolutePath());
 
     private MDIDesktopPane desktop;
-
-    public ArrayList<String> initialGraphEages = new ArrayList<String>();
-    public DirectedGraph<RDFNode, Statement> initialGraph = new DirectedSparseGraph<>();
-    public Graph<RDFNode, Statement> dataGraph = new DirectedSparseGraph<>();
-    final ScalingControl scaler = new CrossoverScalingControl();
-    private ArrayList<Graph> finalClustersListwithoutLiterals;
-    private String filePath;
     private FirstGraphVisualization mainFrame;
-    private DefaultModalGraphMouse<RDFNode, Statement> vv2;
-    private DirectedSparseGraph<RDFNode, MyLink> weightedGraphToClusteingWithoutLitterals;
-    private Graph<RDFNode, Statement> graphToClustering;
-    private ArrayList<SharedFeature.PairSourceSet> listResourceRDFNodes;
 
     private ProjectManager projectManager = null;
-
-    private boolean fullGraph = PreprocessingFrame.fullGraph;
-    private ArrayList<Graph> finalClustersList = new ArrayList<Graph>();
-    private Collection<RDFNode> vertexToSee = new ArrayList<RDFNode>();
-    private int view = 0;
+    private DirectedGraph<RDFNode, Statement> initialGraph = new DirectedSparseGraph<>();
 
     public MainWindow() {
         setTitle(MAIN_WINDOW_TITLE);
@@ -127,17 +111,15 @@ public class MainWindow extends JFrame {
     private void initGraph() throws IOException, PropertyVetoException, ClassNotFoundException {
         if (projectManager != null) {
             initialGraph = projectManager.loadGraph();
-            filePath = projectManager.getGraphFile().getAbsolutePath();
-            initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
-            dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
+            String filePath = projectManager.getGraphFile().getAbsolutePath();
+            ArrayList<String> initialGraphEages = GetGraphInfo.GetPredicatesList(initialGraph);
+            Graph<RDFNode, Statement> dataGraph = GraphCreation.GraphCreation(initialGraph, filePath, false, false);
 
             setTitle(MAIN_WINDOW_TITLE + " : " + projectManager.getProjectName());
             mainFrame = new FirstGraphVisualization(initialGraph, projectManager.getProperty(ProjectManager.GRAPH_FILENAME), false, projectManager.getXY());
             mainFrame.setVisible(true);
             mainFrame.setClosable(false);
             desktop.add(mainFrame);
-
-            //exportMenuItem.setEnabled(false);
 
             if (projectManager.getClusterDone()) runCluster();
 
@@ -280,15 +262,16 @@ public class MainWindow extends JFrame {
     }
 
     private void runCluster() throws IOException, ClassNotFoundException, PropertyVetoException {
-        fullGraph = PreprocessingFrame.fullGraph; // boolean to know if the user want to use only instancies or all the graph
-        graphToClustering = GraphCreation.GraphCreation(initialGraph, filePath, false, fullGraph); // graph after choosing datagraph or full graph (it can be initialGraph or dataGraph)
-        weightedGraphToClusteingWithoutLitterals = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getGraph(); // the graph to clustering with all modifications specified in the semantique caracteristics
-        listResourceRDFNodes = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getSet(); //la liste qui va nous permettre l'affichage sur le graphe initial (vertex that was regrouped)
+        boolean fullGraph = PreprocessingFrame.fullGraph;
+        String filePath = projectManager.getGraphFile().getAbsolutePath();
+        Graph<RDFNode, Statement> graphToClustering = GraphCreation.GraphCreation(initialGraph, filePath, false, fullGraph);
+        DirectedSparseGraph<RDFNode, MyLink> weightedGraphToClusteingWithoutLitterals = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getGraph();
+        ArrayList<SharedFeature.PairSourceSet> listResourceRDFNodes = GraphCreation.main(graphToClustering, projectManager.getPredicates(), projectManager.getQueries()).getSet();
 
         // systematic parameters (clustering parameters )
         MCODEVertexWeitingWeightedGraph mcodevertexweitingweightedgraph = new MCODEVertexWeitingWeightedGraph();
-        finalClustersListwithoutLiterals = mcodevertexweitingweightedgraph.VertexWeiting(weightedGraphToClusteingWithoutLitterals, projectManager.getClusterThreshold(), projectManager.getClusterExpansion(), desktop); //the list of clusters with merged nodes
-        finalClustersList = RealClustersConstruction.main(initialGraph, finalClustersListwithoutLiterals, listResourceRDFNodes); //add litterals to clusters and construct clusters with real vertex (initial vertex)
+        ArrayList<Graph> finalClustersListwithoutLiterals = mcodevertexweitingweightedgraph.VertexWeiting(weightedGraphToClusteingWithoutLitterals, projectManager.getClusterThreshold(), projectManager.getClusterExpansion(), desktop);
+        ArrayList<Graph> finalClustersList = RealClustersConstruction.main(initialGraph, finalClustersListwithoutLiterals, listResourceRDFNodes);
         finalClustersList.sort(Comparator.comparingInt(Hypergraph::getVertexCount));
 
         ClustersVizualisation frameInt = new ClustersVizualisation(initialGraph, projectManager, finalClustersList, desktop,
