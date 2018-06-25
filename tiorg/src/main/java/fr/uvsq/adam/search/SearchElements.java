@@ -54,7 +54,7 @@ public class SearchElements {
 //return the result
 
         TopDocs topDocs = searcher.search(query, 100);
-        System.out.println("Nombre total de documents  " + topDocs.totalHits);
+       // System.out.println("Nombre total de documents  " + topDocs.totalHits);
         ScoreDoc[] scoreDocArray = topDocs.scoreDocs;
 //        System.out.println("Les elements trouvés:");
 //
@@ -160,6 +160,12 @@ public class SearchElements {
 
             ReleventFragmentNodes = releventFragmentNodes;
             Keyword = keyword;
+        }
+        public KeywordsReleventFragment(){
+            //
+            ReleventFragmentEdges = new ArrayList<Document>();
+            ReleventFragmentNodes = new ArrayList<ElementReleventFragmentNodes>();
+            //
         }
     }
 //urielement and TypeElement are for the element before patterns (l'element de recuperation)
